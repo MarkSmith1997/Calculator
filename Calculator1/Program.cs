@@ -12,7 +12,7 @@ namespace Calculator1
         static void Main()
         {
             string[] operators = { "+", "-", "*", "/", "^"};
-            Dictionary<string, int> precedence = new Dictionary<string, int>(){ {"+", 2 }, {"-", 2}, {"*", 3}, {"/", 3}, {"^", 4} };
+            Dictionary<string, int> precedence = new Dictionary<string, int>(){ {"+", 2}, {"-", 2}, {"*", 3}, {"/", 3}, {"^", 4} };
             Queue<string> outputQueue = new Queue<string>();
             Stack<string> operatorStack = new Stack<string>();
             string input = Console.ReadLine();
@@ -37,6 +37,13 @@ namespace Calculator1
             {
                 outputQueue.Enqueue(operatorStack.Pop());
             }
+
+            string printString = "";
+            while (outputQueue.Count > 0)
+            {
+                printString += outputQueue.Dequeue() + " ";
+            }
+            Console.WriteLine(printString);
 
         }
     }
