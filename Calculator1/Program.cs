@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Xml.XPath;
+
 
 namespace Calculator1
 {
     class Program
     {
+        private string[] operators;
         Program()
         {
-            string[] operators = { "+", "-", "*", "/", "^" };
-            Console.WriteLine("Enter expression:");
-            string input = Console.ReadLine();
-            Queue<string> outputQueue = ConvertNotation(input, operators);
-            Console.WriteLine(Calculate(outputQueue, operators));
+            operators = new string[]{ "+", "-", "*", "/", "^" };        
         }
         static void Main()
         {
-            new Program();
+            Program instance = new Program();
+            while (true)
+            {
+                Console.WriteLine("Enter expression:");
+                string input = Console.ReadLine();
+                Queue<string> outputQueue = instance.ConvertNotation(input);
+                Console.WriteLine(instance.Calculate(outputQueue));
+            }
         }
-        double Calculate(Queue<string> outputQueue, string[] operators)
+        double Calculate(Queue<string> outputQueue)
         {
             Stack<double> valueStack = new Stack<double>();
             while (outputQueue.Count > 0)
@@ -64,7 +65,7 @@ namespace Calculator1
             }
             return valueStack.Pop();
         }
-        Queue<string> ConvertNotation(string input, string[] operators)
+        Queue<string> ConvertNotation(string input)
         {
             Dictionary<string, int> precedence = new Dictionary<string, int>() { { "+", 2 }, { "-", 2 }, { "*", 3 }, { "/", 3 }, { "^", 4 }, { "(", 0 }, { ")", 5 } };
             Queue<string> outputQueue = new Queue<string>();
