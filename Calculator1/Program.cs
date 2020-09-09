@@ -16,6 +16,7 @@ namespace Calculator1
             Dictionary<string, int> precedence = new Dictionary<string, int>(){ {"+", 2}, {"-", 2}, {"*", 3}, {"/", 3}, {"^", 4}, {"(", 0}, {")", 5} };
             Queue<string> outputQueue = new Queue<string>();
             Stack<string> operatorStack = new Stack<string>();
+            Stack<double> valueStack = new Stack<double>();
             Console.WriteLine("Enter expression:");
             string input = Console.ReadLine();
             string[] inputQueue = input.Split();
@@ -72,12 +73,44 @@ namespace Calculator1
                 outputQueue.Enqueue(operatorStack.Pop());
             }
 
-            string printString = "";
-            while (outputQueue.Count > 0)
+            while(outputQueue.Count > 0)
             {
-                printString += outputQueue.Dequeue() + " ";
+                if (!operators.Contains(outputQueue.Peek()))
+                {
+                    valueStack.Push(double.Parse(outputQueue.Dequeue()));
+                }
+                else
+                {
+                    string currentOperator = outputQueue.Dequeue();
+                    double leftNumber;
+                    double rightNumber;
+                    switch (currentOperator)
+                    {                   
+                        case "+":
+                            valueStack.Push(valueStack.Pop() + valueStack.Pop());
+                            break;
+                        case "-":
+                            rightNumber = valueStack.Pop();
+                            leftNumber = valueStack.Pop();
+                            valueStack.Push(leftNumber - rightNumber);
+                            break;
+                        case "/":
+                            rightNumber = valueStack.Pop();
+                            leftNumber = valueStack.Pop();
+                            valueStack.Push(leftNumber / rightNumber);
+                            break;
+                        case "*":
+                            valueStack.Push(valueStack.Pop() * valueStack.Pop());
+                            break;
+                        case "^":
+                            rightNumber = valueStack.Pop();
+                            leftNumber = valueStack.Pop();
+                            valueStack.Push(Math.Pow(leftNumber, rightNumber));
+                            break;
+                    }
+                }
             }
-            Console.WriteLine(printString);
+            Console.WriteLine(valueStack.Pop());
         }
     }
 }
