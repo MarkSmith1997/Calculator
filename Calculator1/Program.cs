@@ -10,21 +10,70 @@ namespace Calculator1
 {
     class Program
     {
-        static void Main()
+        Program()
         {
-            string[] operators = { "+", "-", "*", "/", "^"};
-            Dictionary<string, int> precedence = new Dictionary<string, int>(){ {"+", 2}, {"-", 2}, {"*", 3}, {"/", 3}, {"^", 4}, {"(", 0}, {")", 5} };
-            Queue<string> outputQueue = new Queue<string>();
-            Stack<string> operatorStack = new Stack<string>();
-            Stack<double> valueStack = new Stack<double>();
+            string[] operators = { "+", "-", "*", "/", "^" };
             Console.WriteLine("Enter expression:");
             string input = Console.ReadLine();
+            Queue<string> outputQueue = ConvertNotation(input, operators);
+            Console.WriteLine(Calculate(outputQueue, operators));
+        }
+        static void Main()
+        {
+            new Program();
+        }
+        double Calculate(Queue<string> outputQueue, string[] operators)
+        {
+            Stack<double> valueStack = new Stack<double>();
+            while (outputQueue.Count > 0)
+            {
+                if (!operators.Contains(outputQueue.Peek()))
+                {
+                    valueStack.Push(double.Parse(outputQueue.Dequeue()));
+                }
+                else
+                {
+                    string currentOperator = outputQueue.Dequeue();
+                    double leftNumber;
+                    double rightNumber;
+                    switch (currentOperator)
+                    {
+                        case "+":
+                            valueStack.Push(valueStack.Pop() + valueStack.Pop());
+                            break;
+                        case "-":
+                            rightNumber = valueStack.Pop();
+                            leftNumber = valueStack.Pop();
+                            valueStack.Push(leftNumber - rightNumber);
+                            break;
+                        case "/":
+                            rightNumber = valueStack.Pop();
+                            leftNumber = valueStack.Pop();
+                            valueStack.Push(leftNumber / rightNumber);
+                            break;
+                        case "*":
+                            valueStack.Push(valueStack.Pop() * valueStack.Pop());
+                            break;
+                        case "^":
+                            rightNumber = valueStack.Pop();
+                            leftNumber = valueStack.Pop();
+                            valueStack.Push(Math.Pow(leftNumber, rightNumber));
+                            break;
+                    }
+                }
+            }
+            return valueStack.Pop();
+        }
+        Queue<string> ConvertNotation(string input, string[] operators)
+        {
+            Dictionary<string, int> precedence = new Dictionary<string, int>() { { "+", 2 }, { "-", 2 }, { "*", 3 }, { "/", 3 }, { "^", 4 }, { "(", 0 }, { ")", 5 } };
+            Queue<string> outputQueue = new Queue<string>();
+            Stack<string> operatorStack = new Stack<string>();
             string[] inputQueue = input.Split();
             bool parenthesisFound;
-
-            foreach(string s in inputQueue)
+            foreach (string s in inputQueue)
             {
-                if(s == "(")
+                if (s == "(")
                 {
                     operatorStack.Push(s);
                 }
@@ -33,7 +82,7 @@ namespace Calculator1
                     parenthesisFound = true;
                     while (parenthesisFound)
                     {
-                        if(operatorStack.Count == 0)
+                        if (operatorStack.Count == 0)
                         {
                             parenthesisFound = false;
                             Console.WriteLine("Error: Parenthesis mismatch, revise input.");
@@ -65,52 +114,14 @@ namespace Calculator1
             }
             while (operatorStack.Count > 0)
             {
-                if(operatorStack.Peek() == "(")
+                if (operatorStack.Peek() == "(")
                 {
                     Console.WriteLine("Error: Parenthesis mismatch, revise input.");
                     break;
-                }                   
+                }
                 outputQueue.Enqueue(operatorStack.Pop());
             }
-
-            while(outputQueue.Count > 0)
-            {
-                if (!operators.Contains(outputQueue.Peek()))
-                {
-                    valueStack.Push(double.Parse(outputQueue.Dequeue()));
-                }
-                else
-                {
-                    string currentOperator = outputQueue.Dequeue();
-                    double leftNumber;
-                    double rightNumber;
-                    switch (currentOperator)
-                    {                   
-                        case "+":
-                            valueStack.Push(valueStack.Pop() + valueStack.Pop());
-                            break;
-                        case "-":
-                            rightNumber = valueStack.Pop();
-                            leftNumber = valueStack.Pop();
-                            valueStack.Push(leftNumber - rightNumber);
-                            break;
-                        case "/":
-                            rightNumber = valueStack.Pop();
-                            leftNumber = valueStack.Pop();
-                            valueStack.Push(leftNumber / rightNumber);
-                            break;
-                        case "*":
-                            valueStack.Push(valueStack.Pop() * valueStack.Pop());
-                            break;
-                        case "^":
-                            rightNumber = valueStack.Pop();
-                            leftNumber = valueStack.Pop();
-                            valueStack.Push(Math.Pow(leftNumber, rightNumber));
-                            break;
-                    }
-                }
-            }
-            Console.WriteLine(valueStack.Pop());
+            return outputQueue;
         }
     }
 }
